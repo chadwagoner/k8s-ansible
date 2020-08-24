@@ -1,0 +1,29 @@
+---
+- hosts: k8s-master
+  gather_facts: false
+  tasks:
+    - name: metallb | create namespace
+      shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/namespace.yaml
+
+    - name: metallb | apply other manifests
+      shell: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.3/manifests/metallb.yaml
+
+    - name: metallb | create first time secret
+      shell: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+
+    - name: metallb | create configmap
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            namespace: metallb-system
+            name: config
+          data:
+            config: |
+              address-pools:
+              - name: default
+                protocol: layer2
+                addresses:
+                - 192.168.88.230-192.168.88.250

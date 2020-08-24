@@ -1,0 +1,9 @@
+---
+linux:
+  user: ubuntu
+
+kubernetes:
+  apiserver:
+    address: "192.168.88.201"
+  pod:
+    address: "10.244.0.0/16"

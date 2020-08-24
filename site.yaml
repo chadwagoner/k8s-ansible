@@ -1,0 +1,24 @@
+---
+- name: common
+  tasks:
+    - name: common
+      import_role:
+        name: common
+
+- name: common-master
+  tasks:
+    - name: common-master
+      import_role:
+        name: common-master
+
+- name: common-worker
+  tasks:
+    - name: common-worker
+      import_role:
+        name: common-worker
+
+- name: common-metallb
+  tasks:
+    - name: common-metallb
+      import_role:
+        name: common-metallb

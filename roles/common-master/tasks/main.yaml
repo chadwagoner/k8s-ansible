@@ -1,0 +1,29 @@
+---
+- hosts: k8s-master
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: common-master | initialize the cluster
+      shell: "kubeadm init --apiserver-advertise-address={{ kubernetes.apiserver.address }} --pod-network-cidr={{ kubernetes.network.address }}"
+
+    - name: common-master | create .kube directory
+      file:
+        path: "/home/{{ linux.user }}/.kube"
+        state: directory
+        mode: 0755
+        owner: "{{ linux.user }}"
+        group: "{{ linux.user }}"
+
+    - name: common-master | copy admin.conf to .kube
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/{{ linux.user }}/.kube/config"
+        remote_src: yes
+        mode: 0644
+        owner: "{{ linux.user }}"
+        group: "{{ linux.user }}"
+
+    - name: common-master | install pod network
+      become: yes
+      become_user: "{{ linux.user }}"
+      shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
